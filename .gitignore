@@ -2,3 +2,4 @@
 .DS_Store
 *.log
 *.pdf
+__pycache__/

@@ -23,14 +23,18 @@ def generate_traffic_event(sensor_id):
     }
 
 
-while True:
-    sensor_id = random.choice(SENSORS)
-    data = generate_traffic_event(sensor_id)
-    try:
-        producer.send(TOPIC, value=data)
-        print(f"Sent: {data}")
-    except Exception as e:
-        print(f"Failed to send: {data}")
-        print(e)
+def run_producer():
+    while True:
+        sensor_id = random.choice(SENSORS)
+        data = generate_traffic_event(sensor_id)
+        try:
+            producer.send(TOPIC, value=data)
+            print(f"Sent: {data}")
+        except Exception as e:
+            print(f"Failed to send: {data}")
+            print(e)
 
-    time.sleep(SECONDS_TO_WAIT)
+        time.sleep(SECONDS_TO_WAIT)
+
+if __name__ == "__main__":
+    run_producer()
