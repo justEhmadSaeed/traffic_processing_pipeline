@@ -28,7 +28,7 @@ The system will:
 3. Get inside the docker container running kafka broker and create a kafka topic for traffic events:
 
    ```bash
-   docker exec -it kafka bash
+   docker exec -it kafka1 bash
    ```
 
    ```bash
