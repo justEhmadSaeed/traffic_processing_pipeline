@@ -34,3 +34,31 @@ The system will:
    ```bash
    kafka-topics --create --topic traffic_data --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
    ```
+
+4. Confirm the topic was created successfully:
+
+   ```bash
+   kafka-topics --list --bootstrap-server localhost:9092
+   ```
+
+5. Close the docker terminal and create a virtual environment and install the required dependencies:
+
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate
+   pip install -r requirements.txt
+   ```
+
+6. Run the producer to start sending traffic data to the Kafka topic:
+
+   ```bash
+   python producer.py
+   ```
+
+7. Run the consumer to start processing the traffic data:
+
+   ```bash
+   spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.5 streaming.py
+   ```
+
+8. Monitor the output in the console to see the processed data.
