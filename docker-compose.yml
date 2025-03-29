@@ -1,3 +1,4 @@
+version: '3.8'
 services:
   zoo1:
     image: confluentinc/cp-zookeeper:7.8.0
@@ -35,17 +36,39 @@ services:
     depends_on:
       - zoo1
 
+  kafka-exporter:
+    image: danielqsj/kafka-exporter:latest
+    container_name: kafka-exporter
+    ports:
+      - "9308:9308"
+    command:
+      - '--kafka.server=kafka1:9092'
+    depends_on:
+      - kafka1
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    depends_on:
+      - kafka-exporter
 
   grafana:
-    image: grafana/grafana-oss:latest  # Use the latest stable version
+    image: grafana/grafana-oss:latest
     container_name: grafana
     restart: unless-stopped
     ports:
       - "3000:3000"
     environment:
-      GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS: hadesarchitect-kafka-datasource  # Allow unsigned plugins
+      GF_SECURITY_ADMIN_PASSWORD: admin  # Change for security
     volumes:
-      - grafana_data:/var/lib/grafana  # Persist Grafana dashboards and settings
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
 
 volumes:
   grafana_data:

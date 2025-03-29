@@ -1,3 +1,4 @@
 # requirements.txt
 kafka-python>=2.0.2
 pyspark>=3.3.0
+prometheus_client
