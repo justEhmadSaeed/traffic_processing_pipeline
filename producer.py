@@ -7,7 +7,7 @@ import time
 producer = KafkaProducer(bootstrap_servers='localhost:9092',
                          value_serializer=lambda v: json.dumps(v).encode('utf-8'))
 
-TOPIC = "traffic_data"
+EVENTS_TOPIC = "traffic_data"
 CONGESTION_LEVELS = ["LOW", "MEDIUM", "HIGH"]
 SENSORS = ['S101', 'S202', 'S303', 'S404', 'S505']
 SECONDS_TO_WAIT = 1
@@ -28,7 +28,7 @@ def run_producer():
         sensor_id = random.choice(SENSORS)
         data = generate_traffic_event(sensor_id)
         try:
-            producer.send(TOPIC, value=data)
+            producer.send(EVENTS_TOPIC, value=data)
             print(f"Sent: {data}")
         except Exception as e:
             print(f"Failed to send: {data}")

@@ -13,6 +13,8 @@ The system will:
 
 ## Project Setup
 
+### Kafka Setup
+
 1. Launch the docker containers with the following command:
 
    ```bash
@@ -25,7 +27,7 @@ The system will:
    docker-compose -f docker-compose.yml ps
    ```
 
-3. Get inside the docker container running kafka broker and create a kafka topic for traffic events:
+3. Get inside the docker container running kafka broker and create kafka topics for traffic events and analysis:
 
    ```bash
    docker exec -it kafka1 bash
@@ -33,9 +35,10 @@ The system will:
 
    ```bash
    kafka-topics --create --topic traffic_data --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+   kafka-topics --create --topic traffic_analysis --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
    ```
 
-4. Confirm the topic was created successfully:
+4. Confirm the topics were created successfully:
 
    ```bash
    kafka-topics --list --bootstrap-server localhost:9092
@@ -62,3 +65,21 @@ The system will:
    ```
 
 8. Monitor the output in the console to see the processed data.
+
+### Grafana Setup
+
+1. Connect to the Grafana container and install the plugin:
+
+   ```bash
+   docker exec -it grafana bash
+   ```
+2. Restart the Grafana container:
+
+   ```bash
+   docker restart grafana
+   ```
+1. Open Grafana in your web browser at `http://localhost:3000`.
+1. Log in with the default credentials:
+   - Username: `admin`
+   - Password: `admin`
+1. Add a new data source:
