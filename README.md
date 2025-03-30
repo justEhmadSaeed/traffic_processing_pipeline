@@ -84,3 +84,30 @@ The system will:
 6.  Create a New Dashboard and add visualization.
 7.  Use the following queries to create visualizations:
     - `vehicle_count_total`
+
+### Query Analysis Implementation Notes
+#### Compute Real time traffic volume
+For Computing real time traffic volume we grouped data by `sensor_id` in 5 minutes window. After that we used agg and sum functions to compute total vehicle count per sensor.
+Relevant Docs:
+- https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.DataFrame.groupBy.html
+
+#### Detect Congestion Hotspots
+For computing congestion hotspots, we used the lag function to go 1 and 2 steps behind, then we filtered those records where congestion_level remained high in all 3 intervals.
+Relevant Docs:
+- https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.functions.lag.html
+
+#### Calculate Avg Speed per sensor
+For computing average speed per sensor we again took the help of agg, avg and groupBy methods but this time we used an overlapping window of 10 minutes with 5 minutes of overlap to get a better average.
+Relevant Docs:
+- https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.functions.window.html
+
+#### Identify Sudden speed drops
+For identifying sudden speed drops we used lag function and compared speed at previous interval with speed at next interval. If the change in average_speed was above or equal to 0.5 we termed it as sudden speed drop.
+Relevant Docs:
+- https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.functions.lag.html
+
+#### Find the 3 Busiest Sensors
+For identifying the busiest sensor we grouped data into 30 minutes window using timestamp and sensor_id and took sum of the vechicle count per sensor. After that we ordered the results in descending order and picked the top 3 results.
+Relevant Docs:
+- https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.DataFrame.orderBy.html
+- https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.DataFrame.limit.html
