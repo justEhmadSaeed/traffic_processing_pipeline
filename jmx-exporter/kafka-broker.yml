@@ -1,0 +1,9 @@
+lowercaseOutputName: true
+lowercaseOutputLabelNames: true
+rules:
+  - pattern: "kafka.server<type=BrokerTopicMetrics, name=(.*)>(.*)"
+    name: "kafka_broker_$1_$2"
+  - pattern: "kafka.network<type=RequestMetrics, name=(.*)>(.*)"
+    name: "kafka_network_$1_$2"
+  - pattern: "java.lang<type=Memory><>(.*)"
+    name: "jvm_memory_$1"

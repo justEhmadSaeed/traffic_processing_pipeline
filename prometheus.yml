@@ -1,7 +1,10 @@
 global:
-  scrape_interval: 5s
+  scrape_interval: 15s
 
 scrape_configs:
-  - job_name: 'kafka'
+  - job_name: "kafka"
     static_configs:
-      - targets: ['kafka-exporter:9308']
+      - targets: ["kafka1:7071"]
+  - job_name: "producer"
+    static_configs:
+      - targets: ["host.docker.internal:8000"]

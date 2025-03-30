@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 services:
   zoo1:
     image: confluentinc/cp-zookeeper:7.8.0
@@ -33,42 +33,33 @@ services:
       KAFKA_JMX_HOSTNAME: ${DOCKER_HOST_IP:-127.0.0.1}
       KAFKA_AUTHORIZER_CLASS_NAME: kafka.security.authorizer.AclAuthorizer
       KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: "true"
+      KAFKA_OPTS: "-javaagent:/usr/share/jmx-exporter/jmx_prometheus_javaagent-0.20.0.jar=7071:/usr/share/jmx-exporter/kafka-broker.yml"
     depends_on:
       - zoo1
-
-  kafka-exporter:
-    image: danielqsj/kafka-exporter:latest
-    container_name: kafka-exporter
-    ports:
-      - "9308:9308"
-    command:
-      - '--kafka.server=kafka1:9092'
-    depends_on:
-      - kafka1
+    volumes:
+      - ./jmx-exporter:/usr/share/jmx-exporter
 
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
-    restart: unless-stopped
     ports:
       - "9090:9090"
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    depends_on:
-      - kafka-exporter
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
 
   grafana:
     image: grafana/grafana-oss:latest
+    platform: linux/amd64
     container_name: grafana
     restart: unless-stopped
     ports:
       - "3000:3000"
     environment:
-      GF_SECURITY_ADMIN_PASSWORD: admin  # Change for security
+      GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS: hamedkarbasi93-kafka-datasource
     volumes:
       - grafana_data:/var/lib/grafana
-    depends_on:
-      - prometheus
 
 volumes:
   grafana_data:

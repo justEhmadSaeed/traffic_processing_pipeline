@@ -34,6 +34,7 @@ The system will:
    ```
 
    ```bash
+   unset KAFKA_OPTS
    kafka-topics --create --topic traffic_data --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
    kafka-topics --create --topic traffic_analysis --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
    ```
@@ -66,20 +67,20 @@ The system will:
 
 8. Monitor the output in the console to see the processed data.
 
-### Grafana Setup
+### Prometheus and Grafana Setup
 
-1. Connect to the Grafana container and install the plugin:
+1.  Open http://localhost:9090/targets in your web browser to verify that Prometheus is scraping the metrics from the Kafka broker and Spark job.
+2.  Ensure that the kafka1:7071 and host.docker.internal:8000 targets are up and running.
+3.  You can query Kafka metrics by going to the "Graph" tab in Prometheus and entering the following queries:
 
-   ```bash
-   docker exec -it grafana bash
-   ```
-2. Restart the Grafana container:
+    - `vehicle_count_total`
 
-   ```bash
-   docker restart grafana
-   ```
-1. Open Grafana in your web browser at `http://localhost:3000`.
-1. Log in with the default credentials:
-   - Username: `admin`
-   - Password: `admin`
-1. Add a new data source:
+4.  Open Grafana in your web browser at `http://localhost:3000` (default: admin/admin).
+5.  Configuration > Data Sources > Add Prometheus data source:
+
+    - URL: ` http://prometheus:9090`
+    - Click "Save & Test" to verify the connection.
+
+6.  Create a New Dashboard and add visualization.
+7.  Use the following queries to create visualizations:
+    - `vehicle_count_total`

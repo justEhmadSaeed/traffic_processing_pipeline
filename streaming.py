@@ -6,7 +6,7 @@ from pyspark.sql.window import Window
 from prometheus_client import Counter, start_http_server
 
 
-start_http_server(8001)
+start_http_server(8000)
 
 spark = SparkSession.builder.appName("TrafficAnalysis").getOrCreate()
 spark.sparkContext.setLogLevel("WARN")
@@ -42,26 +42,9 @@ volume_stream = parsed_stream \
         col("sensor_id")
     ).agg(sum("vehicle_count").alias("total_count"))
 
-# Define a Counter metric for vehicle counts, with labels for sensor_id
 vehicle_count = Counter(
     "vehicle_count_total", "Total number of vehicles", ["sensor_id"]
 )
-# 2. Detect Congestion Hotspots
-# congestion_stream = parsed_stream \
-#     .groupBy(
-#         window(col("timestamp"), "5 minutes"),
-#         col("sensor_id")
-#     ) \
-#     .agg(
-#         # first("congestion_level").alias("congestion_level"),
-#         count(when(col('congestion_level') == 'HIGH', True)).alias("window_count")
-#     ) \
-
-# sensor_window = Window.partitionBy("sensor_id").orderBy("window")
-
-# hotspot_stream = congestion_stream \
-#     .withColumn("prev_1", lag('window_count', 1).over(sensor_window)) \
-#     .withColumn("prev_2", lag('window_count', 2).over(sensor_window)) \
 
 
 def process_event(batch_df, batch_id):
@@ -82,7 +65,9 @@ def write_to_kafka(batch_df, batch_id):
         .save()
     # Increment the Prometheus counter
     for row in batch_df.collect():
-        vehicle_count.labels(sensor_id=row.sensor_id).inc(row.total_count)
+        # Reset counter before incrementing to avoid double counting
+        vehicle_count.labels(sensor_id=row.sensor_id)._value.set(0)
+        vehicle_count.labels(sensor_id=row.sensor_id)._value.set(row.total_count)
         print(f"Sent event: {row.sensor_id} with count {row.total_count}")
 
 
