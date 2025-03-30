@@ -109,6 +109,5 @@ Relevant Docs:
 #### Find the 3 Busiest Sensors
 For identifying the busiest sensor we grouped data into 30 minutes window using timestamp and sensor_id and took sum of the vechicle count per sensor. After that we ordered the results in descending order and picked the top 3 results.
 Relevant Docs:
-## Useful PySpark Documentation Links
 - [PySpark orderBy() Documentation](https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.DataFrame.orderBy.html)  
 - [PySpark limit() Documentation](https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.DataFrame.limit.html)  
